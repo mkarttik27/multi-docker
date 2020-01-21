@@ -1,0 +1,32 @@
+sudo: required
+# Specify docker as a dependency
+services:
+  - docker
+
+# Build test version of react project using the Dockerfile.dev as only that file has all the source code required to run the projects
+before_install:
+  - docker build -t mkarttik/react-test -f ./client/Dockerfile.dev ./client/.
+  # Add any other modules like express' or worker's build to be made for testing
+
+# Run tests
+script:
+  - docker run mkarttik/react-test test -- --coverage
+
+# Build prod versions of all projects
+after_success:
+  - docker build -t mkarttik/multi-client ./client/.
+  - docker build -t mkarttik/multi-nginx ./nginx/.
+  - docker build -t mkarttik/multi-server ./server/.
+  - docker build -t mkarttik/multi-worker ./worker/.
+
+# Login to Docker CLI - Here we need to give the username and password fpr DOCKER CLI. But to avoid writing the credntials in plain sight,
+# we set them up as environment variables in the Tavis CI (under this app's repo > settings > environment variables)
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+# Push all the prod builds to docker hub
+- docker push mkarttik/multi-client
+- docker push mkarttik/multi-nginx
+- docker push mkarttik/multi-server
+- docker push mkarttik/multi-worker
+
+# Tel Elastic Beanstalk to update
