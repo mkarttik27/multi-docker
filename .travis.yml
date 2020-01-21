@@ -10,7 +10,7 @@ before_install:
 
 # Run tests
 script:
-  - docker run mkarttik/react-test test -- --coverage
+  - docker run mkarttik/react-test npm test -- --coverage
 
 # Build prod versions of all projects
 after_success:
