@@ -19,14 +19,14 @@ after_success:
   - docker build -t mkarttik/multi-server ./server/.
   - docker build -t mkarttik/multi-worker ./worker/.
 
-# Login to Docker CLI - Here we need to give the username and password fpr DOCKER CLI. But to avoid writing the credntials in plain sight,
-# we set them up as environment variables in the Tavis CI (under this app's repo > settings > environment variables)
-- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Login to Docker CLI - Here we need to give the username and password fpr DOCKER CLI. But to avoid writing the credntials in plain sight,
+  # we set them up as environment variables in the Tavis CI (under this app's repo > settings > environment variables)
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
 
-# Push all the prod builds to docker hub
-- docker push mkarttik/multi-client
-- docker push mkarttik/multi-nginx
-- docker push mkarttik/multi-server
-- docker push mkarttik/multi-worker
+  # Push all the prod builds to docker hub
+  - docker push mkarttik/multi-client
+  - docker push mkarttik/multi-nginx
+  - docker push mkarttik/multi-server
+  - docker push mkarttik/multi-worker
 
 # Tel Elastic Beanstalk to update
