@@ -6,7 +6,7 @@ services:
     image: 'redis:latest'
   api:
     build:
-      # Here we dont use something like ./server/Dockerfile.dev coz this i sonly the name of the file. Location is picked from the context.
+      # Here we dont use something like ./server/Dockerfile.dev coz this is only the name of the file. Location is picked from the context.
       dockerfile: Dockerfile.dev
       context: ./server/.
     volumes:
@@ -32,7 +32,7 @@ services:
   worker:
     build:
       dockerfile: Dockerfile.dev
-      context: ./worker/.
+      context: ./worker
     volumes:
       - /app/node_modules
       - ./worker:/app
@@ -43,6 +43,9 @@ services:
     restart: always
     build:
       dockerfile: Dockerfile.dev
-      context: ./nginx/.
+      context: ./nginx
     ports:
       - '3050:80'
+    depends_on:
+      - api
+      - client

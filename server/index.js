@@ -40,27 +40,36 @@ app.get('/', (req, res) => {
 });
 
 app.get('/values/all', async (req, res) => {
+  console.log('Recieved request for all values from DB');
   const values = await pgClient.query('SELECT * from values');
+  console.log('Recieved response from postgres with ' + values.rows);
 
   res.send(values.rows);
 });
 
 app.get('/values/current', async (req, res) => {
+  console.log('Recieved request for current values from redis');
   redisClient.hgetall('values', (err, values) => {
+    console.log('Recieved response from redis');
     res.send(values);
   });
+
 });
 
 app.post('/values', async (req, res) => {
   const index = req.body.index;
+  console.log('Recieved request for finding fibonaccii number of ' + index);
+
 
   if (parseInt(index) > 40) {
     return res.status(422).send('Index too high');
   }
 
   redisClient.hset('values', index, 'Nothing yet!');
+  console.log('Set the key '+ index + ' in redis');
   redisPublisher.publish('insert', index);
   pgClient.query('INSERT INTO values(number) VALUES($1)', [index]);
+  console.log('Set in database the value ' + index);
 
   res.send({ working: true });
 });
